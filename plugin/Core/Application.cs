@@ -37,23 +37,23 @@ namespace revit_mcp_plugin.Core
 
             RibbonPanel mcpPanel = application.CreateRibbonPanel("Club MCP");
 
-            PushButtonData pushButtonData = new PushButtonData("ID_EXCMD_TOGGLE_REVIT_MCP", "Club MCP\r\n Switch",
+            PushButtonData pushButtonData = new PushButtonData("ID_EXCMD_TOGGLE_REVIT_MCP", "Club MCP\r\n Activer",
                 Assembly.GetExecutingAssembly().Location, "revit_mcp_plugin.Core.MCPServiceConnection");
-            pushButtonData.ToolTip = "Open / Close mcp server";
+            pushButtonData.ToolTip = "Ouvrir / Fermer le serveur MCP";
             pushButtonData.Image = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/icon-16.png", UriKind.RelativeOrAbsolute));
             pushButtonData.LargeImage = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/icon-32.png", UriKind.RelativeOrAbsolute));
             mcpPanel.AddItem(pushButtonData);
 
-            PushButtonData panelButtonData = new PushButtonData("ID_EXCMD_TOGGLE_MCP_PANEL", "MCP\r\n Panel",
+            PushButtonData panelButtonData = new PushButtonData("ID_EXCMD_TOGGLE_MCP_PANEL", "Panneau\r\n MCP",
                 Assembly.GetExecutingAssembly().Location, "revit_mcp_plugin.Core.ToggleMCPPanel");
-            panelButtonData.ToolTip = "Show / Hide MCP monitoring panel";
+            panelButtonData.ToolTip = "Afficher / Masquer le panneau de suivi MCP";
             panelButtonData.Image = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/panel-16.png", UriKind.RelativeOrAbsolute));
             panelButtonData.LargeImage = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/panel-32.png", UriKind.RelativeOrAbsolute));
             mcpPanel.AddItem(panelButtonData);
 
-            PushButtonData mcp_settings_pushButtonData = new PushButtonData("ID_EXCMD_MCP_SETTINGS", "Settings",
+            PushButtonData mcp_settings_pushButtonData = new PushButtonData("ID_EXCMD_MCP_SETTINGS", "Paramètres",
                 Assembly.GetExecutingAssembly().Location, "revit_mcp_plugin.Core.Settings");
-            mcp_settings_pushButtonData.ToolTip = "MCP Settings";
+            mcp_settings_pushButtonData.ToolTip = "Paramètres MCP";
             mcp_settings_pushButtonData.Image = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/settings-16.png", UriKind.RelativeOrAbsolute));
             mcp_settings_pushButtonData.LargeImage = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/settings-32.png", UriKind.RelativeOrAbsolute));
             mcpPanel.AddItem(mcp_settings_pushButtonData);
