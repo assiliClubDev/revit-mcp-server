@@ -1,4 +1,4 @@
-[![Cover Image](./assets/cover.png?v=2)](https://github.com/LuDattilo/revit-mcp-server)
+[![Cover Image](./assets/cover.png?v=2)](https://github.com/assiliClubDev/revit-mcp-server)
 
 # mcp-servers-for-revit
 
@@ -10,6 +10,27 @@ mcp-servers-for-revit enables AI clients like Claude, Cline, and other MCP-compa
 
 > [!NOTE]
 > This is a fork of the original [revit-mcp](https://github.com/mcp-servers-for-revit/revit-mcp) project with additional tools and functionality improvements.
+
+## Installation rapide - Agence Club (FR)
+
+Version Club MCP maintenue par l'agence Club (Rennes), fork de [LuDattilo/revit-mcp-server](https://github.com/LuDattilo/revit-mcp-server).
+
+**Prérequis :** Revit 2023 à 2027, Claude Desktop. Node.js n'est pas nécessaire (inclus dans le paquet).
+
+**Installation automatique** - fermer Revit et Claude Desktop, puis coller dans PowerShell :
+
+```powershell
+powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/assiliClubDev/revit-mcp-server/main/scripts/install.ps1 | iex"
+```
+
+Le script détecte les versions de Revit installées, télécharge le ZIP correspondant depuis les [Releases](https://github.com/assiliClubDev/revit-mcp-server/releases), l'installe dans `%AppData%\Autodesk\Revit\Addins\<version>\` et configure Claude Desktop.
+
+**Installation manuelle** - télécharger `mcp-servers-for-revit-<version>-Revit<année>.zip` depuis les [Releases](https://github.com/assiliClubDev/revit-mcp-server/releases) (pas le code source), extraire le contenu dans `%AppData%\Autodesk\Revit\Addins\<année>\`, puis lancer `scripts\fix-mcp.ps1` pour configurer Claude Desktop.
+
+**Vérification :** Revit > onglet Compléments > panneau **Club MCP** > **Activer**. Dans Claude Desktop : « Utilise say_hello pour tester la connexion à Revit ».
+
+> [!WARNING]
+> Tester sur une **copie détachée**, jamais sur un fichier central. Le plugin peut modifier et supprimer des éléments : chaque suppression ouvre une confirmation « Oui / Non » dans Revit, à lire avant de cliquer.
 
 ## Key Features
 
@@ -73,7 +94,7 @@ flowchart LR
 Open PowerShell and paste this command:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/LuDattilo/revit-mcp-server/main/scripts/install.ps1 | iex"
+powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/assiliClubDev/revit-mcp-server/main/scripts/install.ps1 | iex"
 ```
 
 The script:
@@ -98,7 +119,7 @@ The script:
 #### Option B: Manual install
 
 > [!IMPORTANT]
-> **Download the pre-built ZIP from the [Releases](https://github.com/LuDattilo/revit-mcp-server/releases) page.** Do NOT clone the repository or copy the source code — the source contains `.cs` files, not compiled `.dll` files. The plugin will not work without compiled binaries.
+> **Download the pre-built ZIP from the [Releases](https://github.com/assiliClubDev/revit-mcp-server/releases) page.** Do NOT clone the repository or copy the source code — the source contains `.cs` files, not compiled `.dll` files. The plugin will not work without compiled binaries.
 
 Extract the ZIP to:
 
@@ -339,7 +360,7 @@ The Revit plugin includes a dockable chat panel that connects directly to the An
 
 1. Close Revit
 2. Delete the old installation from `%AppData%\Autodesk\Revit\Addins\<version>\`
-3. Download the correct ZIP from the [Releases](https://github.com/LuDattilo/revit-mcp-server/releases) page
+3. Download the correct ZIP from the [Releases](https://github.com/assiliClubDev/revit-mcp-server/releases) page
 4. Extract and verify the folder structure matches the one shown in [Step 1](#1-install-the-revit-plugin)
 5. Restart Revit
 
