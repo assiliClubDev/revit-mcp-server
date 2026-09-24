@@ -9,28 +9,9 @@ This package is the MCP server component of [mcp-servers-for-revit](https://gith
 
 ## Setup
 
-**Claude Code**
+In the Club fork, this server is shipped inside the plugin release (`revit_mcp_plugin\Commands\RevitMCPCommandSet\server\`, with a portable `runtime\node.exe`). Configure your MCP client to run that bundled copy — not the `mcp-server-for-revit` npm package, which is the upstream version.
 
-```bash
-claude mcp add mcp-server-for-revit -- npx -y mcp-server-for-revit
-```
-
-**Claude Desktop**
-
-Claude Desktop → Settings → Developer → Edit Config → `claude_desktop_config.json`:
-
-```json
-{
-    "mcpServers": {
-        "mcp-server-for-revit": {
-            "command": "npx",
-            "args": ["-y", "mcp-server-for-revit"]
-        }
-    }
-}
-```
-
-Restart Claude Desktop. When you see the hammer icon, the MCP server is connected.
+See [Connecter Claude au MCP (FR)](https://github.com/assiliClubDev/revit-mcp-server#connecter-claude-au-mcp-fr) in the main README for Claude Desktop and Claude Code instructions.
 
 ## Supported Tools (124)
 

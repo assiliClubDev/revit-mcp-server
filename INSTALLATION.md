@@ -206,23 +206,29 @@ Or manually edit `%APPDATA%\Claude\claude_desktop_config.json`:
 ```json
 {
     "mcpServers": {
-        "mcp-server-for-revit": {
-            "command": "npx",
-            "args": ["-y", "mcp-server-for-revit"]
+        "revit-mcp": {
+            "command": "C:\\Users\\<USER>\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2026\\revit_mcp_plugin\\Commands\\RevitMCPCommandSet\\server\\runtime\\node.exe",
+            "args": ["C:\\Users\\<USER>\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2026\\revit_mcp_plugin\\Commands\\RevitMCPCommandSet\\server\\build\\index.js"]
         }
     }
 }
 ```
 
-Restart Claude Desktop and verify that the hammer icon appears at the bottom right.
+Replace `<USER>` with your Windows user name and `2026` with your Revit version. Keep any other servers already in `mcpServers`. Quit and restart Claude Desktop, then check Settings → Developer: `revit-mcp` should be running.
+
+> [!NOTE]
+> Use the bundled server above, not `npx -y mcp-server-for-revit`: the npm package is the upstream version, not the Club fork.
 
 ### For Claude Code (CLI)
 
-Run the following command to register the MCP server:
+Run the following in PowerShell to register the bundled MCP server for all projects:
 
-```bash
-claude mcp add mcp-server-for-revit -- npx -y mcp-server-for-revit
+```powershell
+$srv = "$env:APPDATA\Autodesk\Revit\Addins\2026\revit_mcp_plugin\Commands\RevitMCPCommandSet\server"
+claude mcp add revit-mcp -s user -- "$srv\runtime\node.exe" "$srv\build\index.js"
 ```
+
+Check with `claude mcp list`: `revit-mcp` should show as connected.
 
 ### For Other MCP Clients (Cline, Continue, etc.)
 

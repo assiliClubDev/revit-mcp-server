@@ -32,6 +32,75 @@ Le script détecte les versions de Revit installées, télécharge le ZIP corres
 > [!WARNING]
 > Tester sur une **copie détachée**, jamais sur un fichier central. Le plugin peut modifier et supprimer des éléments : chaque suppression ouvre une confirmation « Oui / Non » dans Revit, à lire avant de cliquer.
 
+## Connecter Claude au MCP (FR)
+
+Le serveur MCP est **inclus dans le plugin** (Node.js portable + `server\build\index.js`). Claude doit lancer **ce** serveur, pas le paquet npm `mcp-server-for-revit` (version d'origine, différente de la version Club).
+
+Chemins utilisés ci-dessous (remplacer `2026` par votre version de Revit) :
+
+| Élément | Chemin |
+|---|---|
+| Node.js inclus | `%APPDATA%\Autodesk\Revit\Addins\2026\revit_mcp_plugin\Commands\RevitMCPCommandSet\server\runtime\node.exe` |
+| Serveur MCP | `%APPDATA%\Autodesk\Revit\Addins\2026\revit_mcp_plugin\Commands\RevitMCPCommandSet\server\build\index.js` |
+
+### Claude Desktop
+
+**Cas normal : rien à faire.** L'installation automatique ajoute l'entrée `revit-mcp` dans `%APPDATA%\Claude\claude_desktop_config.json`.
+
+1. Quitter complètement Claude Desktop (icône de la barre des tâches > Quitter), puis le relancer.
+2. Vérifier : Claude Desktop > **Réglages** > **Développeur** : `revit-mcp` doit apparaître comme actif (*running*).
+
+**Si `revit-mcp` n'apparaît pas**, relancer la configuration automatique :
+
+```powershell
+powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/assiliClubDev/revit-mcp-server/main/scripts/fix-mcp.ps1 | iex"
+```
+
+**Configuration manuelle** (si le script échoue) : Réglages > Développeur > **Modifier la configuration**, puis ajouter l'entrée `revit-mcp` dans `mcpServers` (remplacer `<NOM>` par le nom d'utilisateur Windows ; conserver les autres serveurs déjà présents) :
+
+```json
+{
+  "mcpServers": {
+    "revit-mcp": {
+      "command": "C:\\Users\\<NOM>\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2026\\revit_mcp_plugin\\Commands\\RevitMCPCommandSet\\server\\runtime\\node.exe",
+      "args": ["C:\\Users\\<NOM>\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2026\\revit_mcp_plugin\\Commands\\RevitMCPCommandSet\\server\\build\\index.js"]
+    }
+  }
+}
+```
+
+Enregistrer, puis quitter et relancer Claude Desktop.
+
+### Claude Code (onglet Code de Claude Desktop, ou terminal `claude`)
+
+Dans PowerShell :
+
+```powershell
+$srv = "$env:APPDATA\Autodesk\Revit\Addins\2026\revit_mcp_plugin\Commands\RevitMCPCommandSet\server"
+claude mcp add revit-mcp -s user -- "$srv\runtime\node.exe" "$srv\build\index.js"
+```
+
+`-s user` rend le serveur disponible dans tous les projets. Vérifier avec `claude mcp list` : `revit-mcp` doit être indiqué *Connected*.
+
+### Ordre de démarrage et test
+
+1. Ouvrir Revit et un modèle (**copie détachée** pour les tests).
+2. Onglet **Compléments** > panneau **Club MCP** > **Activer** (démarre l'écoute sur le port 8080).
+3. Ouvrir Claude Desktop ou Claude Code.
+4. Demander : « Utilise say_hello pour tester la connexion à Revit ». Une fenêtre doit s'ouvrir dans Revit.
+5. Puis par exemple : « Donne-moi les informations du projet Revit ouvert ».
+
+### Dépannage
+
+| Symptôme | Cause probable | Action |
+|---|---|---|
+| Claude ne propose aucun outil Revit | Entrée `revit-mcp` absente ou mauvais chemin | Lancer `fix-mcp.ps1` (ci-dessus), puis quitter et relancer Claude |
+| `revit-mcp` en erreur dans Réglages > Développeur | `node.exe` ou `index.js` introuvable (autre version de Revit, installation incomplète) | Vérifier les deux chemins du tableau ; réinstaller avec la commande d'installation |
+| Les outils existent mais « impossible de se connecter à Revit » | Revit fermé ou MCP non activé | Revit ouvert, **Club MCP > Activer** |
+| Échec au démarrage du plugin | Port 8080 déjà utilisé | `netstat -ano \| findstr :8080`, fermer le programme concerné |
+| Délai dépassé sur les gros modèles | Requête trop lourde (ex. lecture de tous les avertissements) | Réessayer sur un périmètre plus petit ; Revit peut finir le travail après le délai |
+| Diagnostic complet | - | `powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/assiliClubDev/revit-mcp-server/main/scripts/diagnose.ps1 \| iex"` |
+
 ## Key Features
 
 - **124 MCP tools** — project info, model health, clash detection, element CRUD, batch operations, data export (PDF/DWG/IFC/CSV)
@@ -156,22 +225,25 @@ Addins/2025/
 
 ### 2. Configure the MCP server
 
+The MCP server is bundled with the plugin (portable Node.js + `server\build\index.js`). Point your MCP client at the bundled server — not at the `mcp-server-for-revit` npm package, which is the upstream version. See [Connecter Claude au MCP (FR)](#connecter-claude-au-mcp-fr) for full details.
+
 **Claude Code**
 
-```bash
-claude mcp add mcp-server-for-revit -- npx -y mcp-server-for-revit
+```powershell
+$srv = "$env:APPDATA\Autodesk\Revit\Addins\2026\revit_mcp_plugin\Commands\RevitMCPCommandSet\server"
+claude mcp add revit-mcp -s user -- "$srv\runtime\node.exe" "$srv\build\index.js"
 ```
 
 **Claude Desktop**
 
-Claude Desktop → Settings → Developer → Edit Config → `claude_desktop_config.json`:
+The installer configures it automatically. To restore it, run `scripts\fix-mcp.ps1`. Manual entry in `claude_desktop_config.json` (Settings → Developer → Edit Config):
 
 ```json
 {
     "mcpServers": {
-        "mcp-server-for-revit": {
-            "command": "npx",
-            "args": ["-y", "mcp-server-for-revit"]
+        "revit-mcp": {
+            "command": "C:\\Users\\<USER>\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2026\\revit_mcp_plugin\\Commands\\RevitMCPCommandSet\\server\\runtime\\node.exe",
+            "args": ["C:\\Users\\<USER>\\AppData\\Roaming\\Autodesk\\Revit\\Addins\\2026\\revit_mcp_plugin\\Commands\\RevitMCPCommandSet\\server\\build\\index.js"]
         }
     }
 }
